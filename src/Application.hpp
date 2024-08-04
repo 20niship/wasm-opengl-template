@@ -67,6 +67,8 @@ class Application {
   bool dimensionChanged;
   void detectWindowDimensionChange();
 
+  bool show_demo_window = true;
+  bool show_another_window = false;
  protected:
   Application(const Application&){};
 
