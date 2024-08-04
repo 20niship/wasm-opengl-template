@@ -11,7 +11,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <functional>
-#include <iostream>
 #include <stdexcept>
 
 #ifdef __EMSCRIPTEN__
@@ -38,7 +37,7 @@ Application::Application()
     : state(stateReady), width(640), height(480), title("Application") {
   currentApplication = this;
 
-  std::cout << "[Info] GLFW initialisation" << std::endl;
+  printf("[Info] Application created\n");
 
   // initialize the GLFW library
   if (!glfwInit()) {
@@ -79,8 +78,8 @@ Application::Application()
   // get version info
   const GLubyte* renderer = glGetString(GL_RENDERER);
   const GLubyte* version = glGetString(GL_VERSION);
-  std::cout << "Renderer: " << renderer << std::endl;
-  std::cout << "OpenGL version supported " << version << std::endl;
+  printf("[Info] Renderer: %s\n", renderer);
+  printf("[Info] OpenGL version supported %s\n", version);
 
   // opengl configuration
   glEnable(GL_DEPTH_TEST);  // enable depth-testing

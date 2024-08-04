@@ -15,6 +15,7 @@
 class MyApplication : public Application {
  public:
   MyApplication();
+  ~MyApplication();
 
  protected:
   virtual void loop();
