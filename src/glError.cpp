@@ -9,7 +9,6 @@
 #include "glError.hpp"
 
 #include <GL/glew.h>
-#include <iostream>
 #include <string>
 
 using namespace std;
@@ -19,7 +18,7 @@ void glCheckError(const char* file, unsigned int line) {
 
   while (errorCode != GL_NO_ERROR) {
     string fileString(file);
-    string error = "unknown error";
+    const char *error = "unknown error";
 
     // clang-format off
     switch (errorCode) {
@@ -32,8 +31,7 @@ void glCheckError(const char* file, unsigned int line) {
     }
     // clang-format on
 
-    cerr << "OpenglError : file=" << file << " line=" << line
-         << " error:" << error << endl;
+    printf("OpenGLError: file= %s, line=%d,error:%s",file,line,error);
     errorCode = glGetError();
   }
 }

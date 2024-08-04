@@ -11,7 +11,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_operation.hpp>
-#include <iostream>
 #include <vector>
 
 #include "asset.hpp"
@@ -75,8 +74,8 @@ MyApplication::MyApplication()
       index.push_back((x + 0) + (size + 1) * (y + 0));
     }
 
-  std::cout << "vertices=" << vertices.size() << std::endl;
-  std::cout << "index=" << index.size() << std::endl;
+  printf("vertices=%lu\n", vertices.size());
+  printf("index=%lu\n", index.size());
 
   // creation of the vertex array buffer----------------------------------------
 
