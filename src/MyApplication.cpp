@@ -44,8 +44,6 @@ VertexType getHeightMap(const glm::vec2 position) {
   return v;
 }
 
-#define SHADER_DIR "/shader"
-
 MyApplication::MyApplication()
     : Application(),
       vertexShader(SHADER_DIR "/shader.vert", GL_VERTEX_SHADER),
@@ -123,7 +121,7 @@ void MyApplication::loop() {
 
   float t = getTime();
   // set matrix : projection + view
-  projection = glm::perspective(float(2.0 * atan(height / 1920.f)),
+  projection = glm::perspective(float(2.0 * atan(getHeight() / 1920.f)),
                                 getWindowRatio(), 0.1f, 100.f);
   view = glm::lookAt(glm::vec3(20.0 * sin(t), 20.0 * cos(t), 20.0),
                      glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 1.0));
@@ -152,6 +150,8 @@ void MyApplication::loop() {
                  GL_UNSIGNED_INT,      // type
                  NULL                  // element array buffer offset
   );
+
   glBindVertexArray(0);
+
   shaderProgram.unuse();
 }

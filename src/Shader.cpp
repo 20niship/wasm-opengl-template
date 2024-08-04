@@ -80,10 +80,6 @@ Shader::Shader(const std::string& filename, GLenum type) {
 
     cout << "[Error] compilation error: " << filename << endl;
     cout << log << endl;
-    cout << "---------------------------------" << endl;
-    cout << shaderText << endl;
-    cout << "---------------------------------" << endl;
-
 
     exit(EXIT_FAILURE);
   } else {
