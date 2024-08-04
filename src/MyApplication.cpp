@@ -17,6 +17,8 @@
 #include "asset.hpp"
 #include "glError.hpp"
 
+#include "imgui_samples.hpp"
+
 struct VertexType {
   glm::vec3 position;
   glm::vec3 normal;
@@ -112,6 +114,8 @@ MyApplication::MyApplication()
 
   // vao end
   glBindVertexArray(0);
+
+  load_imgui(getWindow());
 }
 
 void MyApplication::loop() {
@@ -154,4 +158,10 @@ void MyApplication::loop() {
   glBindVertexArray(0);
 
   shaderProgram.unuse();
+
+  imgui_draw();
+}
+
+MyApplication::~MyApplication(){
+  imgui_shutdown();
 }
