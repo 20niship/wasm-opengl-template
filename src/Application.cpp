@@ -7,6 +7,7 @@
  */
 
 #include "Application.hpp"
+#include <unistd.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -15,18 +16,9 @@
 
 using namespace std;
 
-Application* currentApplication = NULL;
-
-Application& Application::getInstance() {
-  if (currentApplication)
-    return *currentApplication;
-  else
-    throw std::runtime_error("There is no current Application");
-}
 
 Application::Application()
     : state(stateReady), width(640), height(480), title("Application") {
-  currentApplication = this;
 
   cout << "[Info] GLFW initialisation" << endl;
 
@@ -36,17 +28,21 @@ Application::Application()
   }
 
   // setting the opengl version
-  int major = 3;
-  int minor = 2;
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __EMSCRIPTEN__
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+#else
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
 
   // create the window
   window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
   if (!window) {
     glfwTerminate();
+    std::cout << "[ERROR] : Couldn't create a window" << std::endl;
     throw std::runtime_error("Couldn't create a window");
   }
 
@@ -71,6 +67,7 @@ Application::Application()
   glEnable(GL_DEPTH_TEST);  // enable depth-testing
   glDepthFunc(GL_LESS);  // depth-testing interprets a smaller value as "closer"
 
+  std::cout << "[INFO] : Application created" << std::endl;
   // vsync
   // glfwSwapInterval(false);
 }
@@ -93,8 +90,7 @@ float Application::getTime() const {
 
 void Application::run() {
   state = stateRun;
-
-  // Make the window's context current
+  std::cout << "[INFO] : Application running" << std::endl;
   glfwMakeContextCurrent(window);
 
   time = glfwGetTime();
@@ -104,18 +100,21 @@ void Application::run() {
     float t = glfwGetTime();
     deltaTime = t - time;
     time = t;
+    std::cout << "[INFO] : deltaTime = " << deltaTime << std::endl;
 
     // detech window related changes
     detectWindowDimensionChange();
 
+    std::cout << "[INFO] : Application running" << std::endl;
     // execute the frame code
     loop();
 
     // Swap Front and Back buffers (double buffering)
     glfwSwapBuffers(window);
-
-    // Pool and process events
     glfwPollEvents();
+
+    // sleep 30 ms 
+    usleep(3e4);
   }
 
   glfwTerminate();
@@ -134,18 +133,6 @@ void Application::detectWindowDimensionChange() {
 
 void Application::loop() {
   cout << "[INFO] : loop" << endl;
-}
-
-int Application::getWidth() {
-  return width;
-}
-
-int Application::getHeight() {
-  return height;
-}
-
-float Application::getWindowRatio() {
-  return float(width) / float(height);
 }
 
 bool Application::windowDimensionChanged() {

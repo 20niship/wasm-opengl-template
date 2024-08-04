@@ -26,9 +26,20 @@ add_executable(main
 )
 
 if (EMSCRIPTEN)
-  target_link_libraries(main PUBLIC "-s USE_GLFW=3")
-  target_link_libraries(main PUBLIC "-s USE_WEBGL2=1")
-  target_link_libraries(main PUBLIC "-s WASM=1")
+  target_link_options(main PUBLIC
+    "-sUSE_GLFW=3"
+    "-sUSE_WEBGL2=1"
+    "-sWASM=1"
+    "-sALLOW_MEMORY_GROWTH=1"
+    "-sALLOW_TABLE_GROWTH=1"
+    "-sSAFE_HEAP=1"
+    "-sFULL_ES3"
+    "-pthread"
+    "-fwasm-exceptions"
+    #  "-sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency"
+    "-sPTHREAD_POOL_SIZE=4"
+    # "-sMAXIMUM_MEMORY=1024mb"
+  )
 
   # Copy the index.html file.
   FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/index.html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
