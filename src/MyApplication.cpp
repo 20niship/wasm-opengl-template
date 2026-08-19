@@ -11,11 +11,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_operation.hpp>
-#include <iostream>
 #include <vector>
 
 #include "asset.hpp"
 #include "glError.hpp"
+
+#include "imgui_samples.hpp"
 
 struct VertexType {
   glm::vec3 position;
@@ -73,8 +74,8 @@ MyApplication::MyApplication()
       index.push_back((x + 0) + (size + 1) * (y + 0));
     }
 
-  std::cout << "vertices=" << vertices.size() << std::endl;
-  std::cout << "index=" << index.size() << std::endl;
+  printf("vertices=%lu\n", vertices.size());
+  printf("index=%lu\n", index.size());
 
   // creation of the vertex array buffer----------------------------------------
 
@@ -112,6 +113,8 @@ MyApplication::MyApplication()
 
   // vao end
   glBindVertexArray(0);
+
+  load_imgui(getWindow());
 }
 
 void MyApplication::loop() {
@@ -154,4 +157,10 @@ void MyApplication::loop() {
   glBindVertexArray(0);
 
   shaderProgram.unuse();
+
+  imgui_draw();
+}
+
+MyApplication::~MyApplication(){
+  imgui_shutdown();
 }

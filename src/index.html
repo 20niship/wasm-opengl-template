@@ -4,10 +4,27 @@
     <title>OpenGL_CMake_Skeleton</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no">
+    <style>
+      body {
+        font-family: arial;
+        margin: 0;
+        padding: none;
+        background-color: black;
+      }
+      .emscripten { 
+        margin: 0;
+        padding: 0;
+        display: block; 
+      }
+      div.emscripten { text-align: center; }
+      div.emscripten_border { border: none; }
+      canvas.emscripten { border: 0px none; background-color: black; }
+    </style>
   </head>
   <body>
-    <canvas id="canvas" oncontextmenu="event.preventDefault()">
-    </canvas>
+    <div class="emscripten_border">
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
 
     <script>
       var canvas = document.getElementById('canvas');
@@ -19,14 +36,13 @@
         print: console.log,
         printErr: console.error,
       };
+      window.addEventListener('resize', js_resizeCanvas, false);
+      function js_resizeCanvas() {
+        document.getElementById('canvas').width = window.innerWidth;
+        document.getElementById('canvas').height = window.innerHeight;
+      }
     </script>
 
     <script async src="main.js"></script>
-    <style>
-      body {
-        background-color: black;
-      }
-    </style>
-
   </body>
 </html>

@@ -9,43 +9,35 @@
 #include "Shader.hpp"
 
 #include <cstdlib>
-#include <fstream>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 #include <stdexcept>
 #include <vector>
 
 using namespace std;
 using namespace glm;
 
-const std::string shader_header = 
+const std::string shader_header =
 #ifdef __EMSCRIPTEN__
-"#version 300 es\n"
-"precision mediump float;\n"
-"precision mediump int;\n"
-"precision mediump sampler2DArray;\n";
+    "#version 300 es\n"
+    "precision mediump float;\n"
+    "precision mediump int;\n"
+    "precision mediump sampler2DArray;\n";
 #else
-"#version 330\n";
+    "#version 330\n";
 #endif
 
 // file reading
 void getFileContents(const char* filename, vector<char>& buffer) {
-  ifstream file(filename, ios_base::binary);
+  FILE* file = fopen(filename, "rb");
   if (file) {
-    // Load shader header.
-    for (const auto& c : shader_header)
-      buffer.push_back(c);
-
-    file.seekg(0, ios_base::end);
-    streamsize size = file.tellg();
-    if (size > 0) {
-      file.seekg(0, ios_base::beg);
-      buffer.resize(static_cast<size_t>(size + shader_header.size()));
-      file.read(&buffer[shader_header.size()], size);
-    }
-    buffer.push_back('\0');
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    buffer.resize(size);
+    fread(&buffer[0], 1, size, file);
+    fclose(file);
   } else {
-    std::cerr << "Cannot load " << filename << std::endl;
+    printf("[Error] Cannot load %s\n", filename);
   }
 }
 
@@ -57,7 +49,7 @@ Shader::Shader(const std::string& filename, GLenum type) {
   // creation
   handle = glCreateShader(type);
   if (handle == 0) {
-    std::cerr << "[Error] Impossible to create a new Shader" << std::endl;
+    printf("[Error] Impossible to create a new Shader\n");
     throw std::runtime_error("[Error] Impossible to create a new Shader");
   }
 
@@ -78,12 +70,12 @@ Shader::Shader(const std::string& filename, GLenum type) {
     char* log = new char[logsize + 1];
     glGetShaderInfoLog(handle, logsize, &logsize, log);
 
-    cout << "[Error] compilation error: " << filename << endl;
-    cout << log << endl;
+    printf("[Error] compilation error: %s\n", filename.c_str());
+    printf("%s\n", log);
 
     exit(EXIT_FAILURE);
   } else {
-    cout << "[Info] Shader " << filename << " compiled successfully" << endl;
+    printf("[Info] Shader %s compiled successfully\n", filename.c_str());
   }
 }
 
@@ -96,7 +88,7 @@ Shader::~Shader() {}
 ShaderProgram::ShaderProgram() {
   handle = glCreateProgram();
   if (!handle) {
-    std::cerr << "[Error] Impossible to create a new Shader" << std::endl;
+    printf("[Error] Impossible to create a new Shader\n");
     throw std::runtime_error("[Error] Impossible to create a new Shader");
   }
 }
@@ -114,7 +106,7 @@ void ShaderProgram::link() {
   GLint result;
   glGetProgramiv(handle, GL_LINK_STATUS, &result);
   if (result != GL_TRUE) {
-    cout << "[Error] linkage error" << endl;
+    printf("[Error] linkage error\n");
 
     GLsizei logsize = 0;
     glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &logsize);
@@ -122,7 +114,7 @@ void ShaderProgram::link() {
     char* log = new char[logsize];
     glGetProgramInfoLog(handle, logsize, &logsize, log);
 
-    cout << log << endl;
+    printf("%s\n", log);
   }
 }
 
@@ -132,7 +124,7 @@ GLint ShaderProgram::uniform(const std::string& name) {
     // uniform that is not referenced
     GLint r = glGetUniformLocation(handle, name.c_str());
     if (r == GL_INVALID_OPERATION || r < 0)
-      cout << "[Error] uniform " << name << " doesn't exist in program" << endl;
+      printf("[Error] uniform %s doesn't exist in program\n", name.c_str());
     // add it anyways
     uniforms[name] = r;
 
@@ -144,7 +136,7 @@ GLint ShaderProgram::uniform(const std::string& name) {
 GLint ShaderProgram::attribute(const std::string& name) {
   GLint attrib = glGetAttribLocation(handle, name.c_str());
   if (attrib == GL_INVALID_OPERATION || attrib < 0)
-    cout << "[Error] Attribute " << name << " doesn't exist in program" << endl;
+    printf("[Error] Attribute %s doesn't exist in program\n", name.c_str());
 
   return attrib;
 }
